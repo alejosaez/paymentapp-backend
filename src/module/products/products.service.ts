@@ -14,4 +14,12 @@ export class ProductsService {
     const product = this.productRepository.create(productData);
     return this.productRepository.save(product);
   }
+  async findAll(): Promise<Product[]> {
+    return await this.productRepository.find();
+  }
+
+
+  async findOne(id: number): Promise<Product> {
+    return await this.productRepository.findOneBy({ id });
+  }
 }

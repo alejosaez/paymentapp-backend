@@ -6,11 +6,11 @@ import { ProductsModule } from './module/products/product.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'paymentapp.sqlite', 
+      database: 'paymentapp.sqlite',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, 
+      synchronize: true,
     }),
-    ProductsModule, 
+    ProductsModule,
   ],
 })
 export class AppModule {}

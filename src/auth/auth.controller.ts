@@ -10,13 +10,10 @@ export class AuthController {
     @Body() body: { token: string; email: string; username: string },
   ) {
     const { token, email, username } = body;
-
-    // Validar el token con Auth0
     const decoded = await this.authService.validateToken(token);
 
-    // Manejar el usuario en la base de datos
     const user = await this.authService.handleUser(email, username);
 
-    return { user, decoded }; // Devolver el usuario y el payload decodificado
+    return { user, decoded };
   }
 }

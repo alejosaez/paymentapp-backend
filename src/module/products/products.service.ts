@@ -18,7 +18,6 @@ export class ProductsService {
     return await this.productRepository.find();
   }
 
-
   async findOne(id: number): Promise<Product> {
     return await this.productRepository.findOneBy({ id });
   }

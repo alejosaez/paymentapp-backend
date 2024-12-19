@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './module/products/product.module';
+import { ConfigModule } from '@nestjs/config';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'paymentapp.sqlite',
@@ -11,6 +14,7 @@ import { ProductsModule } from './module/products/product.module';
       synchronize: true,
     }),
     ProductsModule,
+    OpenaiModule,
   ],
 })
 export class AppModule {}

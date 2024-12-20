@@ -4,7 +4,7 @@ import { UsersModule } from './module/users/users.module';
 import { ProductsModule } from './module/products/product.module';
 import { CartModule } from './module/cart/cart.module';
 import { AuthModule } from './auth/auth.module';
-
+import { OpenaiModule } from './openai/openai.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     ProductsModule,
     CartModule,
     AuthModule,
+    OpenaiModule,
   ],
 })
 export class AppModule {}

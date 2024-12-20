@@ -13,25 +13,33 @@ export class OpenaiService {
   }
 
   async getChatResponse(userInput: string, userName: string): Promise<string> {
+    // Obtén todos los productos
     const products = await this.productsService.findAll();
 
+    // Construye el listado de productos
     const productList = products
       .map(
         (p) =>
-          `- ${p.name}: ${p.description}. Precio: $${p.price}. Stock: ${p.stock} unidades.`,
+          `- ${p.name}: ${p.description}. Precio: $${p.price.toFixed(
+            2,
+          )}. Stock: ${p.stock} unidades.`,
       )
       .join('\n');
 
+    // Prompt optimizado
     const prompt = `
-    Eres un asistente virtual para un e-commerce de productos deportivos. 
-    Actualmente estás ayudando a ${userName}.
+    Eres un asistente virtual para un e-commerce especializado en productos deportivos.
+    Tu objetivo es ayudar a los usuarios proporcionando información sobre los productos disponibles.
 
-    El inventario actual es el siguiente:
+    Actualmente estás ayudando a ${userName}.
+    Aquí está el inventario actual de productos:
     ${productList}
 
-    Si el usuario te pregunta por algún producto específico (por ejemplo, proteínas, zapatillas, balones, etc.), busca coincidencias en los nombres y descripciones de los productos disponibles.
-    Si un producto coincide con lo que busca, responde sus características, precio y stock.
-    Si no hay coincidencias, responde que no hay productos relacionados con esa búsqueda.
+    Instrucciones:
+    1. Si el usuario pregunta por un producto específico, busca coincidencias en los nombres o descripciones.
+    2. Si hay coincidencias, responde con los detalles del producto (nombre, descripción, precio y stock).
+    3. Si no hay coincidencias, informa al usuario que no se encontraron productos relacionados.
+    4. Si el usuario realiza preguntas generales (por ejemplo, productos en stock), responde con una lista adecuada.
 
     El usuario dice: "${userInput}"
     `;

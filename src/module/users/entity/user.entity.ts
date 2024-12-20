@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Cart } from 'src/module/cart/entities/cart.entity';
 
 @Entity('users')
 export class User {
@@ -11,6 +18,10 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
-  password: string;
+  @Column({ nullable: true })
+  password?: string;
+
+  @OneToOne(() => Cart, (cart) => cart.user, { nullable: true, cascade: true })
+  @JoinColumn()
+  cart?: Cart;
 }

@@ -10,10 +10,14 @@ export class AuthController {
     @Body() body: { token: string; email: string; username: string },
   ) {
     const { token, email, username } = body;
-    const decoded = await this.authService.validateToken(token);
 
-    const user = await this.authService.handleUser(email, username);
+    try {
+      const decoded = await this.authService.validateToken(token);
+      const user = await this.authService.handleUser(email, username);
 
-    return { user, decoded };
+      return { user, decoded };
+    } catch (error) {
+      throw new Error(`Validation failed: ${error.message}`);
+    }
   }
 }

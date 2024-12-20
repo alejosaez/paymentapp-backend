@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
@@ -32,14 +36,25 @@ export class CartService {
 
   async addToCart(userId: string, addToCartDto: AddToCartDto): Promise<Cart> {
     const { productId, quantity } = addToCartDto;
+
+    // Verificar que el producto existe
     const product = await this.productRepository.findOneBy({ id: productId });
 
     if (!product) {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
+    // Verificar que haya suficiente stock disponible
+    if (product.stock < quantity) {
+      throw new BadRequestException(
+        `Insufficient stock for product "${product.name}". Available: ${product.stock}, Requested: ${quantity}`,
+      );
+    }
+
+    // Obtener o crear el carrito
     const cart = await this.getCart(userId);
 
+    // Buscar si el producto ya existe en el carrito
     let cartItem = cart.cartProducts.find(
       (item) => item.product.id === productId,
     );
@@ -57,6 +72,11 @@ export class CartService {
       cart.cartProducts.push(cartItem);
     }
 
+    // Reducir el stock del producto
+    product.stock -= quantity;
+    await this.productRepository.save(product);
+
+    // Actualizar el total del carrito
     cart.total = cart.cartProducts.reduce(
       (sum, item) => sum + item.totalPrice,
       0,
@@ -79,8 +99,29 @@ export class CartService {
       throw new NotFoundException(`Cart item with ID ${itemId} not found`);
     }
 
+    const product = await this.productRepository.findOneBy({
+      id: cartItem.product.id,
+    });
+
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID ${cartItem.product.id} not found`,
+      );
+    }
+
+    const quantityDifference = quantity - cartItem.quantity;
+
+    if (quantityDifference > 0 && product.stock < quantityDifference) {
+      throw new BadRequestException(
+        `Insufficient stock for product "${product.name}". Available: ${product.stock}, Requested: ${quantityDifference}`,
+      );
+    }
+
     cartItem.quantity = quantity;
-    cartItem.totalPrice = cartItem.quantity * cartItem.product.price;
+    cartItem.totalPrice = cartItem.quantity * product.price;
+
+    product.stock -= quantityDifference;
+    await this.productRepository.save(product);
 
     cart.total = cart.cartProducts.reduce(
       (sum, item) => sum + item.totalPrice,
@@ -100,6 +141,16 @@ export class CartService {
 
     if (cartItemIndex === -1) {
       throw new NotFoundException(`Cart item with ID ${itemId} not found`);
+    }
+
+    const cartItem = cart.cartProducts[cartItemIndex];
+    const product = await this.productRepository.findOneBy({
+      id: cartItem.product.id,
+    });
+
+    if (product) {
+      product.stock += cartItem.quantity;
+      await this.productRepository.save(product);
     }
 
     cart.cartProducts.splice(cartItemIndex, 1);

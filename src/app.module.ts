@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductsModule } from './module/products/product.module';
-import { ConfigModule } from '@nestjs/config';
-import { OpenaiModule } from './openai/openai.module';
 import { UsersModule } from './module/users/users.module';
+import { ProductsModule } from './module/products/product.module';
+import { CartModule } from './module/cart/cart.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'paymentapp.sqlite',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    ProductsModule,
-    OpenaiModule,
     UsersModule,
+    ProductsModule,
+    CartModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

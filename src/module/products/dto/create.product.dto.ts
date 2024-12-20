@@ -23,5 +23,5 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   @IsUrl()
-  imageUrl: string; 
+  imageUrl: string;
 }

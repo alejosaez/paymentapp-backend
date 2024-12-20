@@ -1,23 +1,23 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('products') 
+@Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
-  id: number; 
+  id: number;
 
   @Column()
-  name: string; 
+  name: string;
   @Column()
-  description: string; 
+  description: string;
 
   @Column()
-  category: string; 
+  category: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  price: number; 
+  price: number;
   @Column()
-  stock: number; 
+  stock: number;
 
   @Column()
-  imageUrl: string; 
+  imageUrl: string;
 }
